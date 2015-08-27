@@ -78,7 +78,10 @@ static const char *applet;
 static char *service, *runlevel, *ibsave, *prefix;
 static RC_DEPTREE *deptree;
 static RC_STRINGLIST *applet_list, *services, *tmplist;
-static RC_STRINGLIST *restart_services, *need_services, *use_services;
+static RC_STRINGLIST *restart_services;
+static RC_STRINGLIST *need_services;
+static RC_STRINGLIST *use_services;
+static RC_STRINGLIST *want_services;
 static RC_HOOK hook_out;
 static int exclusive_fd = -1, master_tty = -1;
 static bool sighup, in_background, deps, dry_run;
@@ -245,6 +248,7 @@ cleanup(void)
 	rc_stringlist_free(restart_services);
 	rc_stringlist_free(need_services);
 	rc_stringlist_free(use_services);
+	rc_stringlist_free(want_services);
 	rc_stringlist_free(services);
 	rc_stringlist_free(applet_list);
 	rc_stringlist_free(tmplist);
@@ -1298,8 +1302,10 @@ openrc_run(int argc, char **argv)
 			prefix = save;
 		} else if (strcmp(optarg, "ineed") == 0 ||
 		    strcmp(optarg, "iuse") == 0 ||
+		    strcmp(optarg, "iwant") == 0 ||
 		    strcmp(optarg, "needsme") == 0 ||
 		    strcmp(optarg, "usesme") == 0 ||
+		    strcmp(optarg, "wantsme") == 0 ||
 		    strcmp(optarg, "iafter") == 0 ||
 		    strcmp(optarg, "ibefore") == 0 ||
 		    strcmp(optarg, "iprovide") == 0)
