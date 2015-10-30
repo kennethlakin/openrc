@@ -28,6 +28,8 @@
  * SUCH DAMAGE.
  */
 
+#include <fnmatch.h>
+
 #include "queue.h"
 #include "librc.h"
 
@@ -382,6 +384,9 @@ static RC_STRINGLIST *rc_conf = NULL;
 char *
 rc_conf_value(const char *setting)
 {
+	RC_STRINGLIST *conf_d;
+	DIR *dp;
+	struct dirent *d;
 	RC_STRINGLIST *old;
 	RC_STRING *s;
 	char *p;
@@ -391,6 +396,16 @@ rc_conf_value(const char *setting)
 #ifdef DEBUG_MEMORY
 		atexit(_free_rc_conf);
 #endif
+
+		/* Support rc.conf.d directory. */
+		if ((dp = opendir(RC_CONF_D)) != NULL) {
+				while ((d = readdir(dp)) != NULL) {
+					if (fnmatch("*.conf", d->d_name, FNM_PATHNAME) == 0) {
+						printf("File name is %s\n", d->d_name);
+					}
+				}
+				closedir(dp);
+		}
 
 		/* Support old configs. */
 		if (exists(RC_CONF_OLD)) {
